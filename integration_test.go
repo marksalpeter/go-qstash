@@ -26,7 +26,7 @@ func TestRoundTrip(t *testing.T) {
 	}
 
 	// Check that the received message matches the one we sent
-	topicURL, done, err := testReceive(ctx, func(_ context.Context, m *Message) {
+	topicURL, done, err := testReceive(t, ctx, func(_ context.Context, m *Message) {
 		if m.ID != send.ID {
 			t.Errorf("expected message id %s, got %s", send.ID, m.ID)
 		} else if string(m.Body) != string(send.Body) {
@@ -61,7 +61,7 @@ func testPublish(ctx context.Context, topicURL string, m *Message, opts ...Publi
 }
 
 // testReceive uses ngrok to connect a public reverse proxy to the receiver
-func testReceive(ctx context.Context, onReceive func(ctx context.Context, m *Message)) (string, <-chan struct{}, error) {
+func testReceive(t *testing.T, ctx context.Context, onReceive func(ctx context.Context, m *Message)) (string, <-chan struct{}, error) {
 	// Create a receiver
 	r, err := NewReceiver()
 	if err != nil {
@@ -76,12 +76,13 @@ func testReceive(ctx context.Context, onReceive func(ctx context.Context, m *Mes
 	if err != nil {
 		return "", nil, err
 	}
+
 	// This will stop when the context is canceled
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
 		if err := http.Serve(tun, r.Receive(onReceive)); err != nil {
-			panic(err)
+			t.Log(err)
 		}
 	}()
 	return tun.URL(), done, nil

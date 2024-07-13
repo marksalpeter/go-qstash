@@ -63,22 +63,6 @@ func ExamplePublisher_publishWithDelay() {
 	}
 }
 
-// Finally, its possible to publish a message at a regular interval using `cron`
-// syntax. This allows you to create lambda functions that run on a schedule.
-func ExamplePublisher_publishWithSchedule() {
-	// Create a new qstash sender
-	p, err := qstash.NewPublisher("https://my-serverless-project.com/api/receive_message")
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Send a message every minute
-	if err := p.PublishWithSchedule(context.Background(), &qstash.Message{
-		Body: []byte("Hello Every Minute!"),
-	}, " * * * * * "); err != nil {
-		log.Fatal(err)
-	}
-}
-
 // The following example demonstrates how to use qstash to send and receive messages.
 // This example uses ngrok to expose our message receiver to the internet (otherwise upstash
 // will not be able to reach our endpoint).
@@ -148,12 +132,6 @@ func Example_ngrokDemoApp() {
 	}, 1*time.Second); err != nil {
 		log.Fatal(err)
 	}
-	// ... every minute
-	if err := p.PublishWithSchedule(ctx, &qstash.Message{
-		Body: []byte("Hello Every Minute!"),
-	}, "* * * * *"); err != nil {
-		log.Fatal(err)
-	}
 
 	// Wait for the ngrok tunnel to shut down
 	<-done
@@ -163,6 +141,5 @@ func Example_ngrokDemoApp() {
 	// Server is running...
 	// Received:  Hello World!
 	// Received:  Hello 1 Second Later!
-	// Received:  Hello Every Minute!
 	// Server shutdown
 }

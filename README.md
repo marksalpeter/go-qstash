@@ -89,12 +89,6 @@ if err := p.PublishWithDelay(ctx, &qstash.Message{
 }, 1*time.Second); err != nil {
     log.Fatal(err)
 }
-// ... every minute
-if err := p.PublishWithSchedule(ctx, &qstash.Message{
-    Body: []byte("Hello Every Minute!"),
-}, "* * * * *"); err != nil {
-    log.Fatal(err)
-}
 
 // Wait for the ngrok tunnel to shut down
 <-done
@@ -104,7 +98,6 @@ log.Println("Server shutdown")
 // Server is running...
 // Received:  Hello World!
 // Received:  Hello 1 Second Later!
-// Received:  Hello Every Minute!
 // Server shutdown
 
 ```
@@ -145,27 +138,6 @@ if err != nil {
 if err := p.PublishWithDelay(context.Background(), &qstash.Message{
     Body: []byte("Hello In 5 Seconds!"),
 }, 5*time.Second); err != nil {
-    log.Fatal(err)
-}
-
-```
-
-### PublishWithSchedule
-
-Finally, its possible to publish a message at a regular interval using `cron`
-syntax. This allows you to create lambda functions that run on a schedule.
-
-```golang
-
-// Create a new qstash sender
-p, err := qstash.NewPublisher("https://my-serverless-project.com/api/receive_message")
-if err != nil {
-    log.Fatal(err)
-}
-// Send a message every minute
-if err := p.PublishWithSchedule(context.Background(), &qstash.Message{
-    Body: []byte("Hello Every Minute!"),
-}, " * * * * * "); err != nil {
     log.Fatal(err)
 }
 

@@ -101,9 +101,6 @@ func (q *Publisher) Publish(ctx context.Context, m *Message, opts ...PublishOpti
 	if os.Delay > 0 {
 		r.Header.Set("Upstash-Delay", os.Delay.String())
 	}
-	if len(os.Schedule) > 0 {
-		r.Header.Set("Upstash-Schedule", os.Schedule)
-	}
 	if os.Retries > 0 {
 		r.Header.Set("Upstash-Retries", strconv.Itoa(os.Retries))
 	}
@@ -130,12 +127,6 @@ func (q *Publisher) Publish(ctx context.Context, m *Message, opts ...PublishOpti
 
 	// Success
 	return nil
-}
-
-// PublishWithSchedule publishes a message to the QStash with a chron schedule
-// Note: see https://crontab.guru/ for help with the schedule format
-func (q *Publisher) PublishWithSchedule(ctx context.Context, message *Message, schedule string, opts ...PublishOption) error {
-	return q.Publish(ctx, message, append(opts, WithSchedule(schedule))...)
 }
 
 // PublishWithDelay publishes a message to the QStash with a delay

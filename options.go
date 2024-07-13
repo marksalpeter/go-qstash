@@ -162,7 +162,7 @@ func withTopic(topic string) PublisherOption {
 
 // defaultPublisherOptions are the default publisher options
 var defaultPublisherOptions = []PublisherOption{
-	WithQStashURL("https://qstash.upstash.io/v1/publish"),
+	WithQStashURL("https://qstash.upstash.io/v2/publish"),
 	WithQStashToken(os.Getenv("QSTASH_TOKEN")),
 	WithClientTimeout(time.Second),
 	WithClientMaxBackOff(time.Second),
@@ -173,7 +173,6 @@ var defaultPublisherOptions = []PublisherOption{
 // PublishOptions represents the options for an individual publish request
 type PublishOptions struct {
 	Delay                     time.Duration
-	Schedule                  string
 	Retries                   int
 	ContentBasedDeduplication bool
 }
@@ -184,23 +183,11 @@ func (o *PublishOptions) apply(opts ...PublishOption) error {
 	for _, opt := range opts {
 		opt(o)
 	}
-	// Validate the options
-	if o.Delay > 0 && o.Schedule != "" {
-		return fmt.Errorf("cannot set both delay and schedule")
-	}
 	return nil
 }
 
 // PublishOption overrides one of the default publish options
 type PublishOption func(*PublishOptions)
-
-// WithSchedule sets the schedule for the message
-// Note: see https://crontab.guru/ for help with the schedule format
-func WithSchedule(schedule string) PublishOption {
-	return func(o *PublishOptions) {
-		o.Schedule = schedule
-	}
-}
 
 // WithDelay sets the delay for the message
 func WithDelay(delay time.Duration) PublishOption {

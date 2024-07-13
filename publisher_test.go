@@ -103,55 +103,6 @@ func TestPublisher_Publish(t *testing.T) {
 		wantURL:  "url/topic",
 		wantBody: []byte("message"),
 	}, {
-		name: "Publish with schedule",
-		fields: fields{
-			token:  "token",
-			url:    "url",
-			topic:  "topic",
-			client: &mockClient{},
-			uuid: &mockUUID{
-				uuid: "uuid",
-			},
-		},
-		args: args{
-			message: Message{
-				Body: []byte("message"),
-			},
-			opts: []PublishOption{
-				WithSchedule(" * * * * * "),
-			},
-		},
-		wantErr: false,
-		wantHeader: http.Header{
-			"Authorization":            []string{"Bearer token"},
-			"Content-Type":             []string{"application/json"},
-			"Upstash-Deduplication-ID": []string{"uuid"},
-			"Upstash-Schedule":         []string{" * * * * * "},
-		},
-		wantURL:  "url/topic",
-		wantBody: []byte("message"),
-	}, {
-		name: "Publish with delay and schedule fails",
-		fields: fields{
-			token:  "token",
-			url:    "url",
-			topic:  "topic",
-			client: &mockClient{},
-			uuid: &mockUUID{
-				uuid: "uuid",
-			},
-		},
-		args: args{
-			message: Message{
-				Body: []byte("message"),
-			},
-			opts: []PublishOption{
-				WithDelay(time.Second),
-				WithSchedule(" * * * * * "),
-			},
-		},
-		wantErr: true,
-	}, {
 		name: "Publish with custom headers",
 		fields: fields{
 			token:  "token",
